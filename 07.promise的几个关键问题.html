@@ -1,0 +1,85 @@
+<dl>
+  <dt><h2>1. 如何改变promise的状态</h2></dt>
+  <dd>(1). resolve(value): 如果当前是pending就会变为resolved</dd>
+  <dd>(1). reject(reason): 如果当前是pending就会变为rejected</dd>
+  <dd>(3). 抛出异常: 如果当前是pending状态就会变为rejected</dd>
+</dl>
+
+<dl>
+  <dt><h2>2. 一个promise指定多个成功/失败回调函数, 都会被调用吗?</h2></dt>
+  <dd>当promise改变为对应状态时都会调用</dd>
+</dl>
+
+<dl>
+  <dt><h2>3. 改变promise状态和指定回调函数谁先谁后</h2></dt>
+  <dd>(1). 都有可能, 正常情况下是先指定回调函数在改变状态, 但也可以先改变状态在指定回调 </dd>
+  <dd>(2). 如何先改状态再指定回调? 
+    <ol>
+      <li>在执行器中直接调用resolve() / reject()</li>
+      <li>延迟更长的时间之后才调用then()</li>
+    </ol>
+  </dd>
+  <dd>(3). 什么时候才能得到数据
+      <ol>
+        <li>如果先指定的回调, 那么当状态发生改变是, 回调函数就会调用, 得到数据</li>
+        <li>如果先改变的状态, 那么当指定回调函数时, 回调函数就会调用, 得到数据</li>
+      </ol>
+  </dd>
+</dl>
+<dl>
+  <dt><h2>promise.then() 返回的新promise的结果状态有什么决定</h2></dt>
+  <dd>(1). 简单表达: 由then()指定的回调函数执行的结果决定</dd>
+  <dd>(2). 详细表达
+    <ol>
+      <li>如果抛出异常, 新promise变为rejected, reason为抛出的异常</li>
+      <li>如果返回的是非promise的任意值, 会创建一个新的promise, 且新promise变为resolved, value为返回的值</li>
+      <li>如果返回的是另一个新promise, 此promise的结果就会成为新promise的结果</li>
+    </ol>
+  </dd>
+</dl>
+<dl>
+  <dt><h2>5. promise如何串联多个操作任务?</h2></dt>
+  <dd>(1). promise的then()返回一个新的promise, 可以写成then()的链式调用</dd>
+  <dd>(2). 通过then的链式调用串联多个同步/异步任务</dd>
+</dl>
+
+<dl>
+  <dt><h2>6.promise异常穿透/传递</h2></dt>
+  <dd>(1). 当使用promise的then链式调用时, 可以在最后指定失败的回调</dd>
+  <dd>(2). 前面任何操作中出现了异常, 都会传到最后失败的回调中处理</dd>
+</dl>
+
+<dl>
+  <dt><h2>7.如何中断promise链</h2></dt>
+  <dd>(1). 当使用promise的then链式调用时, 在中间中断, 不再调用后面的回调函数</dd>
+  <dd>(2). 办法: 在回调函数中返回一个pending状态的promise对象</dd>
+</dl>
+
+<script>
+  let p1 = new Promise((res, rej) => {
+    res('成功')
+    // throw '失败'
+  })
+
+  p1.then( //1 => 先执行
+    value => {console.log(value, 1); return Promise.reject('失败')},
+    reason => {console.log(reason, 1); return '成功'}
+  ).then( //undefined => 因为上一步中使用了promise.reject()所以此处会变成异步任务, 后执行
+    value => {console.log(value, '2then')},
+    reason => {console.log(reason, '2catch')}
+  ) 
+
+  p1.then(//2 => 先执行
+    value => {console.log(value, 2)},
+    reason => {console.log(reason, 2)}
+  ) 
+
+  let p2 = new Promise((res, rej) => {
+    res('成功')
+    // throw '失败'
+  }) 
+  p2.then(res => {console.log(res, 1, 'p2');  throw '失败'} )
+  .then(res => console.log(res, 2, 'p2'))
+  .catch(res => console.log(res, 3, 'p2'))
+  
+</script>

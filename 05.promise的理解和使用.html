@@ -1,0 +1,45 @@
+<dl>
+  <dt><h2>promise是什么</h2></dt>
+  <dd>
+    <h3>1. 抽象表达: </h3>
+    <p>Promise 是 JS 中进行异步编程的新的解决方案, (旧的是回调函数)</p>
+  </dd>
+  <dd>
+    <h3>2. 具体表达: </h3>
+    <p>(1). 从语法上来说: Promise 是一个构造函数</p>
+    <p>(2). 从功能上来说: Promise 对象用来封装一个异步操作并可以获取其结果</p>
+  </dd>
+</dl>
+ 
+<dl>
+  <dt><h2>promise的状态改变</h2></dt>
+  <dd>
+    1.pending 变为resolved
+  </dd>
+  <dd>
+    2.pending 变为rejected 
+  </dd>
+  <dd>
+    <dl>
+      <dt>说明: 一个promise对象只能改变一次</dt>
+      <dd>无论变为成功或是失败, 都会有一个结果数据</dd>
+      <dd>成功的结果数据一般称为value, 失败的结果数据一般称为 reason</dd>
+    </dl>
+  </dd>
+</dl>
+ <img src="./img/promise.png" alt="">
+
+<script>
+let a = new Promise((res, rej) => {
+  rej('xxx')
+})
+
+// then的第二个参数是失败的回调函数
+a.then(
+value => { //onResolved
+  console.log(value)
+},
+reason => { //onRejected
+  console.log(reason)
+})
+</script>
